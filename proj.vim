@@ -1,4 +1,25 @@
-function! GetInput()
+"=================================================================================
+" Author:       Motosir Ali
+" Date:         May 2013
+" Copyright:    Standard VIM Licensing
+" Descripton:   Initial attempt at providing IDE like capabilities for CPP projects
+"               Yes, it's a bit rubbish atm :) still trying figure out how to
+"               provide an interface to this which feels intuative. 
+"               Interactive menu is very 80s.  
+"=================================================================================
+"
+"=================================================================================
+" 
+" Provides interactive menu to create 
+"  - new project, Makefile, main.cpp and class 
+"  - test, Makefile, main.cpp 
+"  - new class, Generate a new class skeleton given a class name 
+"  - TODO: would also like to add Python variants too...
+"  Invocation:
+"  <F2> to bring up menu, alternatively
+"  :call CPPProject from command line
+"=================================================================================
+function! CPPProject()
     "let s:input = input("Enter filename: ")
     "echom ".   user entered:" s:input
     let choice = inputlist(['Select operation:', '1. Test C++ project',
@@ -21,6 +42,11 @@ function! GetInput()
         echo "\nTODO: Create Python template" 
     endif
 endfunction
+
+"MAPPINGs
+nnoremap <F2> :call CPPProject()<CR> 
+
+
 
 function! CreatNewProject(name)
     call CreateMainFile(a:name)
@@ -111,6 +137,7 @@ function! CreateMakefile(name)
     call setline(1,s:lines) 
 endfunction
 
+" TEST stuff here 
 function! GetWin()
     for i in range(1,winnr('$'))
         echom bufname(i)
