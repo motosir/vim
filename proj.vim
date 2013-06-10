@@ -19,6 +19,16 @@
 "  <F2> to bring up menu, alternatively
 "  :call CPPProject from command line
 "=================================================================================
+function! IsBufferListed(buffername)
+    if bufexists("main.cpp")
+        let bnum = bufnr(a:buffername)
+        if getbufvar(bnum, "&buflisted")
+            return 1
+        endif
+    endif
+    return 0
+endfunction
+
 function! CPPProject()
     "let s:input = input("Enter filename: ")
     "echom ".   user entered:" s:input
@@ -31,11 +41,17 @@ function! CPPProject()
     endif
     if choice == 2
         let s:input = input("\nEnter Project Name: ")
+        if strlen(s:input) == 0 
+            return
+        endif
         call CreatNewProject(s:input) 
         b main.cpp
     endif
     if choice == 3
         let s:input = input("\nEnter Class Name: ")
+        if strlen(s:input) == 0 
+            return
+        endif
         call CreateClass(s:input)
     endif
     if choice == 4
@@ -55,7 +71,7 @@ function! CreatNewProject(name)
 endfunction
 
 function! CreateMainFile(name)
-    if bufexists("main.cpp")
+    if IsBufferListed("main.cpp")
         echom "Aborting new main.cpp. File already exists"
         return
     endif
@@ -63,6 +79,7 @@ function! CreateMainFile(name)
     let s:include = strlen(a:name)==0?'':'#include '.'"'.a:name.'.h"'
     let s:lines = ['#include <iostream>', 
                 \s:include,
+                \'',
                 \'',
                 \'int main(int argc, char* argv[])',
                 \'{',
@@ -75,7 +92,7 @@ endfunction
 function! CreateClass(name)
     let imp = a:name.'.cpp'
     let hdr = a:name.'.h'
-    if bufexists(imp) || bufexists(hdr)
+    if IsBufferListed(imp) || IsBufferListed(hdr)
         echom "Aborting. File already exists"
         return
     endif
@@ -109,7 +126,7 @@ function! CreateClass(name)
 endfunction
 
 function! CreateMakefile(name)
-    if bufexists("Makefile")
+    if IsBufferListed("Makefile")
         echom "Aborting. File already exists"
         return
     endif
@@ -125,7 +142,7 @@ function! CreateMakefile(name)
                 \'all   :   $(TARGET)',
                 \'',
                 \"OBJ =\tmain.o \\",
-                \s:obj,
+                \"\t".s:obj,
                 \'',
                 \"${TARGET}:\t$(OBJ)",
                 \'',
@@ -139,14 +156,24 @@ endfunction
 
 " TEST stuff here 
 function! GetWin()
-    for i in range(1,winnr('$'))
-        echom bufname(i)
-        let bnum = winbufnr(i)
-        "echo "--" getbufvar(bnum, "&buftype")
-        echo "--" getbufvar(bnum, "")
+"    for i in range(1,winnr('$'))
+"        echom bufname(i)
+""        let bnum = winbufnr(i)
+"        echo "--" getbufvar(i, "&buftype")
+""        echo "--" getbufvar(bnum, "")
+"        "echo getwinvar(i,"")
+"    endfor
+
+    for i in range(1,bufnr('$'))
+        echom "name: " bufname(i)
+"        let bnum = winbufnr(i)
+        echo "bt: " getbufvar(i, "&buftype")
+        echo "bl: " getbufvar(i, "&buflisted")
+        echo "bh: " getbufvar(i, "&bufhidden")
+        echo ""
+"        echo "--" getbufvar(bnum, "")
         "echo getwinvar(i,"")
     endfor
-
 endfunction
 
 

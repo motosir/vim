@@ -5,10 +5,6 @@
 " Descripton:   Small set of Misc. Vim scripts to imporve workflow  
 "=================================================================================
 "
-"
-"
-"
-"
 "=================================================================================
 "  = EasyGrep =
 "  - Wrapper around grep to call command line invocation of :grep <WORD> *  
@@ -23,13 +19,23 @@
 "as it prevents quickfix from showing.
 
 function! HideMBE()
-    if bufloaded("-MiniBufExplorer-")
+    if bufloaded("-MiniBufExplorer-") 
         :normal,mbt 
     endif
 endfunction
 
-"
+function! ShowMBE()
+    :cclose
+    if bufexists("-MiniBufExplorer-") 
+        if getbufvar(bufnr("-MiniBufExplorer-"), "&buftype") != "nofile"
+            :normal,mbt 
+        endif
+    endif
+endfunction
+silent command! C call ShowMBE()
+
 function! EasyGrep(arg1, ...)
+    echom a:0 
     :cclose
     call HideMBE()
     if a:0 == 1
@@ -80,6 +86,9 @@ nnoremap <C-k> :call Comment()<CR>
 autocmd FileType python :let b:comment_char = "\""
 autocmd FileType vim :let b:comment_char = "\""
 autocmd FileType cpp :let b:comment_char = "//"
+autocmd BufWinEnter * if (&ft=="cpp") | :let b:comment_char = "//" | endif
+autocmd BufWinEnter * if (&ft=="vim") | :let b:comment_char = "\"" | endif
+autocmd BufWinEnter * if (&ft=="python") | :let b:comment_char = "\"" | endif
 "=================================================================================
 
 
